@@ -18,8 +18,10 @@ jobs:
       run: dotnet workload install maui
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build
+    - name: Build .NET MAUI App
       run: dotnet build MauiUITestSample/MauiUITestSample.csproj -c Release -f net7.0-android
+    - name: Build UITest Project
+      run: dotnet build MyAppTests/MyAppTests.csproj -c Debug
     - name: Install App Center CLI
       run: npm install --location=global appcenter-cli
     - name: Upload App to Test Cloud
