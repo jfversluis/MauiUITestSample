@@ -1,0 +1,38 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+    - name: Setup .NET MAUI
+      run: dotnet workload install maui
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build MauiGithubActionsSample/MauiGithubActionsSample.csproj -c Release -f net7.0-android
+    - name: App Center CLI
+      # You may pin to the exact commit or the version.
+      # uses: avocaddo/AppCenter-Github-Action@d9c12db366470c68d7b9f716ad9b5893a8f92cf4
+      uses: avocaddo/AppCenter-Github-Action@v1.0.2
+      with:
+        # The full App Center CLI command
+        command: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices \"xtc-Xamarin-Forms/api30\" --app-path \"MauiUITestSample/MauiUITestSample/bin/Debug/net7.0-android/aligned-com.companyname.mauiuitestsample.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MauiUITestSample/MyAppTests/bin/Debug/net7.0/\" --uitest-tools-dir \"MauiUITestSample/MyAppTests/bin/Debug/net7.0/\""
+        # Upload token - you can get one from appcenter.ms/settings
+        token: ${{ secrets.APPCENTER_TOKEN }}
