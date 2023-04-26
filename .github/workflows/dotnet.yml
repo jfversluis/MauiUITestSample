@@ -19,7 +19,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build MauiGithubActionsSample/MauiGithubActionsSample.csproj -c Release -f net7.0-android
+      run: dotnet build MauiUITestSample/MauiUITestSample.csproj -c Release -f net7.0-android
     - name: App Center CLI
       # You may pin to the exact commit or the version.
       # uses: avocaddo/AppCenter-Github-Action@d9c12db366470c68d7b9f716ad9b5893a8f92cf4
