@@ -26,4 +26,4 @@ jobs:
       run: npm install --location=global appcenter-cli
     - name: Upload App to Test Cloud
       # Upload token - you can get one from appcenter.ms/settings
-      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices \"xtc-Xamarin-Forms/api30\" --app-path \"MauiUITestSample/MauiUITestSample/bin/Debug/net7.0-android/aligned-com.companyname.mauiuitestsample.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MauiUITestSample/MyAppTests/bin/Debug/net7.0/\" --uitest-tools-dir \"MauiUITestSample/MyAppTests/bin/Debug/net7.0/\" --token \"${{ secrets.APPCENTER_TOKEN }}\""
+      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices \"xtc-Xamarin-Forms/api30\" --app-path \"MauiUITestSample/bin/Debug/net7.0-android/aligned-com.companyname.mauiuitestsample.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/Debug/net7.0/\" --uitest-tools-dir \"MyAppTests/bin/Debug/net7.0/\" --token \"${{ secrets.APPCENTER_TOKEN }}\""
