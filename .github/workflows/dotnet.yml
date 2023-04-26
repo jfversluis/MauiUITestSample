@@ -20,12 +20,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build MauiUITestSample/MauiUITestSample.csproj -c Release -f net7.0-android
-    - name: App Center CLI
-      # You may pin to the exact commit or the version.
-      # uses: avocaddo/AppCenter-Github-Action@d9c12db366470c68d7b9f716ad9b5893a8f92cf4
-      uses: avocaddo/AppCenter-Github-Action@v1.0.2
-      with:
-        # The full App Center CLI command
-        command: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices \"xtc-Xamarin-Forms/api30\" --app-path \"MauiUITestSample/MauiUITestSample/bin/Debug/net7.0-android/aligned-com.companyname.mauiuitestsample.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MauiUITestSample/MyAppTests/bin/Debug/net7.0/\" --uitest-tools-dir \"MauiUITestSample/MyAppTests/bin/Debug/net7.0/\""
-        # Upload token - you can get one from appcenter.ms/settings
-        token: ${{ secrets.APPCENTER_TOKEN }}
+    - name: Install App Center CLI
+      run: npm install --location=global appcenter-cli
+    - name: Upload App to Test Cloud
+      # Upload token - you can get one from appcenter.ms/settings
+      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices \"xtc-Xamarin-Forms/api30\" --app-path \"MauiUITestSample/MauiUITestSample/bin/Debug/net7.0-android/aligned-com.companyname.mauiuitestsample.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MauiUITestSample/MyAppTests/bin/Debug/net7.0/\" --uitest-tools-dir \"MauiUITestSample/MyAppTests/bin/Debug/net7.0/\" --token \"${{ secrets.APPCENTER_TOKEN }}\""
