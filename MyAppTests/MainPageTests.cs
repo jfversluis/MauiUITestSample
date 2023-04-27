@@ -22,7 +22,16 @@ namespace MyAppTests
                 .FirstOrDefault();
 
             Assert.That(button, Is.Not.Null);
-            Assert.That(button.Text, Is.EqualTo("Clicked 1 time"));
+
+            // Caption gets mapped to Label for iOS, Text for Android
+            if (Platform == Platform.iOS)
+            {
+                Assert.That(button.Label, Is.EqualTo("Clicked 1 time"));
+            }
+            else
+            {
+                Assert.That(button.Text, Is.EqualTo("Clicked 1 time"));
+            }
         }
 
         [Test]
