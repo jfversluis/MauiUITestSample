@@ -6,20 +6,23 @@ namespace MyAppTests
     {
         public static IApp StartApp(Platform platform)
         {
-            return platform switch
+            switch (platform)
             {
-                Platform.Android => ConfigureApp
-                                        .Android
-                                        .ApkFile("../../../../MauiUITestSample/bin/Debug/net7.0-android/com.companyname.mauiuitestsample.apk")
-                                        .StartApp(Xamarin.UITest.Configuration.AppDataMode.Clear),
+                case Platform.Android:
+                    return ConfigureApp
+                                .Android
+                                .ApkFile("../../../../MauiUITestSample/bin/Debug/net7.0-android/com.companyname.mauiuitestsample.apk")
+                                .StartApp(Xamarin.UITest.Configuration.AppDataMode.Clear);
 
-                Platform.iOS => ConfigureApp
-                                        .iOS
-                                        //.InstalledApp("com.companyname.mauiuitestsample")
-                                        .AppBundle("../../../../MauiUITestSample/bin/Debug/net7.0-ios/iossimulator-x64/MauiUITestSample.app")
-                                        .StartApp(Xamarin.UITest.Configuration.AppDataMode.Clear),
+                case Platform.iOS:
+                    return ConfigureApp
+                                .iOS
+                                //.InstalledApp("com.companyname.mauiuitestsample")
+                                .AppBundle("../../../../MauiUITestSample/bin/Debug/net7.0-ios/iossimulator-x64/MauiUITestSample.app")
+                                .StartApp(Xamarin.UITest.Configuration.AppDataMode.Clear);
 
-                _ => throw new System.NotSupportedException(),
+                default:
+                    throw new System.NotSupportedException();
             };
         }
     }

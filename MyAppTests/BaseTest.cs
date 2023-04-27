@@ -1,27 +1,30 @@
-﻿using Xamarin.UITest;
+﻿using System;
+using NUnit.Framework;
+using Xamarin.UITest;
 
-namespace MyAppTests;
-
-[TestFixture(Platform.Android)]
-[TestFixture(Platform.iOS)]
-public class BaseTest
+namespace MyAppTests
 {
-    IApp? _app;
-    readonly Platform _platform;
-
-    protected BaseTest(Platform platform) => _platform = platform;
-    //MainPage? _firstPage;
-
-    protected IApp App => _app ?? throw new NullReferenceException();
-
-    [SetUp]
-    public virtual void BeforeEachTest()
+    [TestFixture(Platform.Android)]
+    [TestFixture(Platform.iOS)]
+    public class BaseTest
     {
-        _app = AppInitializer.StartApp(_platform);
+        IApp _app;
+        readonly Platform _platform;
 
-        //_firstPage = new MainPage(App);
+        protected BaseTest(Platform platform) => _platform = platform;
+        //MainPage? _firstPage;
 
-        //App.Screenshot("App Initialized");
-        //_firstPage.WaitForPageToLoad();
+        protected IApp App => _app ?? throw new NullReferenceException();
+
+        [SetUp]
+        public virtual void BeforeEachTest()
+        {
+            _app = AppInitializer.StartApp(_platform);
+
+            //_firstPage = new MainPage(App);
+
+            //App.Screenshot("App Initialized");
+            //_firstPage.WaitForPageToLoad();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Xamarin.UITest;
+﻿using NUnit.Framework;
+using Xamarin.UITest;
 
 namespace MyAppTests
 {
