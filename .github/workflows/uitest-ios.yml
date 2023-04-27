@@ -1,4 +1,4 @@
-name: Test .NET MAUI Android App
+name: Test .NET MAUI iOS App
 
 on:
   workflow_dispatch:
