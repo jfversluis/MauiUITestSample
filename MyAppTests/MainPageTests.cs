@@ -9,7 +9,6 @@ namespace MyAppTests
         public MainPageTests(Platform platform)
             : base(platform)
         {
-
         }
 
         [Test]
@@ -36,12 +35,21 @@ namespace MyAppTests
             App.Tap("IncrementButton");
 
             App.Screenshot("Tapped 2 times");
-
+            App.Repl();
             var button = App.Query(q => q.Button("IncrementButton"))
                 .FirstOrDefault();
 
             Assert.That(button, Is.Not.Null);
-            Assert.That(button.Text, Is.EqualTo("Clicked 2 times"));
+
+            // Caption gets mapped to Label for iOS, Text for Android
+            if (Platform == Platform.iOS)
+            {
+                Assert.That(button.Label, Is.EqualTo("Clicked 2 times"));
+            }
+            else
+            {
+                Assert.That(button.Text, Is.EqualTo("Clicked 2 times"));
+            }
         }
     }
 }
