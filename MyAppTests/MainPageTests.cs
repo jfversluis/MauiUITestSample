@@ -44,7 +44,7 @@ namespace MyAppTests
             App.Tap("IncrementButton");
 
             App.Screenshot("Tapped 2 times");
-            App.Repl();
+
             var button = App.Query(q => q.Button("IncrementButton"))
                 .FirstOrDefault();
 
