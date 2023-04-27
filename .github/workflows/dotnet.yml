@@ -19,11 +19,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build .NET MAUI App
-      run: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c Release -f net7.0-android
+      run: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c Release -f net7.0-android -o ${{ github.workspace }}
     - name: Build UITest Project
       run: dotnet build MyAppTests/MyAppTests.csproj -c Debug
     - name: Install App Center CLI
       run: npm install --location=global appcenter-cli
     - name: Upload App to Test Cloud
       # Upload token - you can get one from appcenter.ms/settings
-      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices ff8f571c --app-path \"${{ github.workspace }}\\bin\\Release\\net7.0-android\\com.companyname.mauiuitestsample-Signed.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/Debug/net48/\" --uitest-tools-dir \"MyAppTests/bin/Debug/net48/\" --token \"${{ secrets.APPCENTER_TOKEN }}\""
+      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices ff8f571c --app-path \"${{ github.workspace }}\\com.companyname.mauiuitestsample-Signed.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/Debug/net48/\" --uitest-tools-dir \"MyAppTests/bin/Debug/net48/\" --token \"${{ secrets.APPCENTER_TOKEN }}\""
