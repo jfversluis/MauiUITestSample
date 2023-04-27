@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using Xamarin.UITest;
 
 namespace MyAppTests
@@ -12,10 +13,35 @@ namespace MyAppTests
         }
 
         [Test]
-        public void Test1()
+        public void TapOneTime()
         {
             App.Tap("IncrementButton");
-            Assert.Pass();
+
+            App.Screenshot("Tapped 1 time");
+
+            var button = App.Query(q => q.Button("IncrementButton"))
+                .FirstOrDefault();
+
+            Assert.That(button, Is.Not.Null);
+            Assert.That(button.Text, Is.EqualTo("Clicked 1 time"));
+        }
+
+        [Test]
+        public void TapTwoTimes()
+        {
+            App.Tap("IncrementButton");
+
+            App.Screenshot("Tapped 1 time");
+
+            App.Tap("IncrementButton");
+
+            App.Screenshot("Tapped 2 times");
+
+            var button = App.Query(q => q.Button("IncrementButton"))
+                .FirstOrDefault();
+
+            Assert.That(button, Is.Not.Null);
+            Assert.That(button.Text, Is.EqualTo("Clicked 2 times"));
         }
     }
 }

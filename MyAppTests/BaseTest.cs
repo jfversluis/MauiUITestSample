@@ -12,7 +12,6 @@ namespace MyAppTests
         readonly Platform _platform;
 
         protected BaseTest(Platform platform) => _platform = platform;
-        //MainPage? _firstPage;
 
         protected IApp App => _app ?? throw new NullReferenceException();
 
@@ -21,10 +20,7 @@ namespace MyAppTests
         {
             _app = AppInitializer.StartApp(_platform);
 
-            //_firstPage = new MainPage(App);
-
-            //App.Screenshot("App Initialized");
-            //_firstPage.WaitForPageToLoad();
+            App.Screenshot("App Initialized");
         }
     }
 }
