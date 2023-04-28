@@ -115,3 +115,9 @@ stages:
         inputs:
           targetType: 'inline'
           script: npm install --location=global appcenter-cli
+
+      - task: Bash@3
+        displayName: Upload App to Test Cloud
+        inputs:
+          targetType: 'inline'
+          script: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest-iOS\" --devices 1f1515d2 --app-path \"$(Build.ArtifactStagingDirectory)/MauiUITestSample.ipa\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --uitest-tools-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --token \"$(APPCENTER_TOKEN_IOS)\""
