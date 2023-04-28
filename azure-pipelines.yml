@@ -1,0 +1,57 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+variables:
+    BuildConfiguration: Release
+    DotNetVersion: 7.0.x
+
+pool:
+  vmImage: windows-latest
+
+
+stages:
+- stage: Test Android
+  jobs:
+  - job: BuildMAUIApps
+    displayName: Build .NET MAUI App
+    pool:
+      vmImage: 'windows-latest'
+      demands:
+      - MSBuild
+      
+    steps:
+    
+    - task: UseDotNet@2
+      displayName: .NET Version
+      inputs:
+        packageType: 'sdk'
+        version: '$(DotNetVersion)'
+    
+    - task: Bash@3
+      displayName: Install MAUI
+      inputs:
+        targetType: 'inline'
+        script: dotnet workload install maui
+    
+    - task: Bash@3
+      displayName: Restore nuget
+      inputs:
+        targetType: 'inline'
+        script: dotnet restore
+
+    - task: Bash@3
+      displayName: Publish .NET MAUI App
+      inputs:
+        targetType: 'inline'
+        script: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c $(BuildConfiguration) -f net7.0-android -o $(Build.ArtifactStagingDirectory)
+
+    - task: Bash@3
+      displayName: Publish UI Test Project
+      inputs:
+        targetType: 'inline'
+        script: dotnet build MyAppTests/MyAppTests.csproj -c $(BuildConfiguration)
