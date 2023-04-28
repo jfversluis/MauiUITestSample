@@ -1,24 +1,12 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-trigger:
-- main
-
 variables:
     BuildConfiguration: Release
     DotNetVersion: 7.0.x
-
-pool:
-  vmImage: windows-latest
-
 
 stages:
 - stage: TestAndroid
   jobs:
   - job: BuildMAUIApps
-    displayName: Build .NET MAUI App
+    displayName: Build .NET MAUI Android App
     pool:
       vmImage: 'windows-latest'
       demands:
@@ -53,7 +41,7 @@ stages:
       displayName: Publish .NET MAUI App
       inputs:
         targetType: 'inline'
-        script: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c $(BuildConfiguration) -f net7.0-android -o $(Build.ArtifactStagingDirectory)
+        script: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c $(BuildConfiguration) -f net7.0-android -o $(Build.ArtifactStagingDirectory)\\
 
     - task: Bash@3
       displayName: Build UI Test Project
@@ -72,3 +60,48 @@ stages:
       inputs:
         targetType: 'inline'
         script: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices ff8f571c --app-path \"$(Build.ArtifactStagingDirectory)\\com.companyname.mauiuitestsample-Signed.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --uitest-tools-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --token \"$(APPCENTER_TOKEN_ANDROID)\""
+
+- stage: TestiOS
+  dependsOn: []
+  jobs:
+    - job: BuildMAUIApps
+      displayName: Build .NET MAUI iOS App
+      pool:
+        vmImage: 'macos-latest'
+      
+      steps:
+        - task: UseDotNet@2
+          displayName: .NET Version
+          inputs:
+            packageType: 'sdk'
+            version: '$(DotNetVersion)'
+        
+        - task: Bash@3
+          displayName: Install .NET MAUI Workload
+          inputs:
+            targetType: 'inline'
+            script: dotnet workload install maui
+        
+        - task: Bash@3
+          displayName: Restore nuget
+          inputs:
+            targetType: 'inline'
+            script: dotnet restore
+
+        - task: Bash@3
+          displayName: Publish .NET MAUI App
+          inputs:
+            targetType: 'inline'
+            script: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c $(BuildConfiguration) -f net7.0-ios -o $(Build.ArtifactStagingDirectory)
+
+        - task: Bash@3
+          displayName: Build UI Test Project
+          inputs:
+            targetType: 'inline'
+            script: dotnet build MyAppTests/MyAppTests.csproj -c $(BuildConfiguration)
+
+        - task: Bash@3
+          displayName: Install App Center CLI
+          inputs:
+            targetType: 'inline'
+            script: npm install --location=global appcenter-cli
