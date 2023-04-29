@@ -3,6 +3,12 @@ name: Test .NET MAUI iOS App
 on:
   workflow_dispatch:
 
+env:
+  BUILD_CONFIGURATION: Release
+  DOTNET_VERSION: 7.0.x
+  MAUI_CSPROJ_TO_BUILD: MauiUITestSample/MauiUITestSample.csproj
+  UITEST_CSPROJ_TO_BUILD: MyAppTests/MyAppTests.csproj
+
 jobs:
   build:
 
@@ -10,14 +16,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET
+    - name: Install .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
-    - name: Setup .NET MAUI
+        
+    - name: Install .NET MAUI Workload
       run: dotnet workload install maui
     
-    # Setup signing certs & profiles
     - name: Import Code-Signing Certificates
       uses: Apple-Actions/import-codesign-certs@v1
       with:
@@ -34,12 +40,15 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-    - name: Build .NET MAUI App
-      run: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c Release -f net7.0-ios -o ${{ github.workspace }}/artifacts/
+      
+    - name: Publish .NET MAUI iOS App
+      run: dotnet publish ${{ env.MAUI_CSPROJ_TO_BUILD }} -c ${{ env.BUILD_CONFIGURATION }} -f net7.0-ios -o ${{ github.workspace }}/artifacts/
+      
     - name: Build UITest Project
-      run: dotnet build MyAppTests/MyAppTests.csproj -c Debug
+      run: dotnet build ${{ env.UITEST_CSPROJ_TO_BUILD }} -c ${{ env.BUILD_CONFIGURATION }}
+      
     - name: Install App Center CLI
       run: npm install --location=global appcenter-cli
+      
     - name: Upload App to Test Cloud
-      # Upload token - you can get one from appcenter.ms/settings
-      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest-iOS\" --devices 1f1515d2 --app-path \"${{ github.workspace }}/artifacts/MauiUITestSample.ipa\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/Debug/net48/\" --uitest-tools-dir \"MyAppTests/bin/Debug/net48/\" --token \"${{ secrets.APPCENTER_TOKEN_IOS }}\""
+      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest-iOS\" --devices 1f1515d2 --app-path \"${{ github.workspace }}/artifacts/MauiUITestSample.ipa\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/\" --uitest-tools-dir \"MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/\" --token \"${{ secrets.APPCENTER_TOKEN_IOS }}\" --async"
