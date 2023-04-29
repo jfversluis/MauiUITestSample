@@ -43,26 +43,21 @@ stages:
         script: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c $(BuildConfiguration) -f net7.0-android -o $(Build.ArtifactStagingDirectory)
 
     - task: Bash@3
-      displayName: Debug
+      displayName: Build UI Test Project
       inputs:
         targetType: 'inline'
-        script: |
-          cd $(Build.ArtifactStagingDirectory)
-          ls
-          cd $(Build.ArtifactStagingDirectory)\\publish
-          ls
+        script: dotnet build MyAppTests/MyAppTests.csproj -c $(BuildConfiguration)
 
-    # - task: Bash@3
-    #   displayName: Build UI Test Project
-    #   inputs:
-    #     targetType: 'inline'
-    #     script: dotnet build MyAppTests/MyAppTests.csproj -c $(BuildConfiguration)
+    - task: Bash@3
+      displayName: Install App Center CLI
+      inputs:
+        targetType: 'inline'
+        script: npm install --location=global appcenter-cli
 
-    # - task: Bash@3
-    #   displayName: Install App Center CLI
-    #   inputs:
-    #     targetType: 'inline'
-    #     script: npm install --location=global appcenter-cli
+    - task: CmdLine@2
+      displayName: Upload App to Test Cloud
+      inputs:
+        script: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices ff8f571c --app-path \"$(Build.ArtifactStagingDirectory)\\com.companyname.mauiuitestsample-Signed.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --uitest-tools-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --token \"$(APPCENTER_TOKEN_ANDROID)\""
 
     # - task: Bash@3
     #   displayName: Upload App to Test Cloud
