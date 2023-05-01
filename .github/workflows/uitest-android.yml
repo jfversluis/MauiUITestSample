@@ -1,3 +1,6 @@
+# Don't forget to add these secrets in your GitHub repository:
+# - APPCENTER_TOKEN_ANDROID: This is an API key for App Center specific to your Android app listing
+
 name: Test .NET MAUI Android App
 
 on:
@@ -8,6 +11,14 @@ env:
   DOTNET_VERSION: 7.0.x
   MAUI_CSPROJ_TO_BUILD: MauiUITestSample/MauiUITestSample.csproj
   UITEST_CSPROJ_TO_BUILD: MyAppTests/MyAppTests.csproj
+  
+  # Find this in the ApplicationId node in the .NET MAUI csproj file
+  APP_ID: com.companyname.mauiuitestsample
+
+  # App Center configuration
+  TEST_DEVICES: ff8f571c
+  APP_DEFINITION: xtc-Xamarin-Forms/MauiTest
+  TEST_SERIES: master
 
 jobs:
   build:
@@ -27,7 +38,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
       
-    - name: Build .NET MAUI App
+    - name: Publish .NET MAUI Android App
       run: dotnet publish ${{ env.MAUI_CSPROJ_TO_BUILD }} -c ${{ env.BUILD_CONFIGURATION }} -f net7.0-android -o ${{ github.workspace }}\\artifacts
       
     - name: Build UITest Project
@@ -37,4 +48,4 @@ jobs:
       run: npm install --location=global appcenter-cli
       
     - name: Upload App to Test Cloud
-      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices ff8f571c --app-path \"${{ github.workspace }}\\artifacts\\com.companyname.mauiuitestsample-Signed.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/\" --uitest-tools-dir \"MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/\" --token \"${{ secrets.APPCENTER_TOKEN_ANDROID }}\""
+      run: appcenter test run uitest --app "${{ env.APP_DEFINITION }}" --devices "${{ env.TEST_DEVICES }}" --app-path "${{ github.workspace }}\\artifacts\\${{ env.APP_ID }}-Signed.apk" --test-series "${{ env.TEST_SERIES }}" --build-dir "MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/" --uitest-tools-dir "MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/" --token "${{ secrets.APPCENTER_TOKEN_ANDROID }}" --async

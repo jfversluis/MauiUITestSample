@@ -1,3 +1,11 @@
+# Don't forget to add these secrets in your GitHub repository:
+# - P12_FILE_BASE64: 
+# - P12_PASSWORD:
+# - APPSTORE_ISSUER_ID:
+# - APPSTORE_KEY_ID: 
+# - APPSTORE_PRIVATE_KEY:
+# - APPCENTER_TOKEN_IOS: 
+
 name: Test .NET MAUI iOS App
 
 on:
@@ -8,6 +16,14 @@ env:
   DOTNET_VERSION: 7.0.x
   MAUI_CSPROJ_TO_BUILD: MauiUITestSample/MauiUITestSample.csproj
   UITEST_CSPROJ_TO_BUILD: MyAppTests/MyAppTests.csproj
+  
+  # Find this in the ApplicationId node in the .NET MAUI csproj file
+  APP_ID: com.companyname.mauiuitestsample
+
+  # App Center configuration
+  TEST_DEVICES: 1f1515d2
+  APP_DEFINITION: xtc-Xamarin-Forms/MauiTest-iOS
+  TEST_SERIES: master
 
 jobs:
   build:
@@ -24,13 +40,13 @@ jobs:
     - name: Install .NET MAUI Workload
       run: dotnet workload install maui
     
-    - name: Import Code-Signing Certificates
+    - name: Install iOS App P12 Certificate
       uses: Apple-Actions/import-codesign-certs@v1
       with:
         p12-file-base64: ${{ secrets.P12_FILE_BASE64 }}
         p12-password: ${{ secrets.P12_PASSWORD }}
         
-    - name: Download Apple Provisioning Profiles
+    - name: Install iOS App Provisioning Profile
       uses: Apple-Actions/download-provisioning-profiles@v1
       with:
         bundle-id: 'com.companyname.mauiuitestsample'
@@ -51,4 +67,4 @@ jobs:
       run: npm install --location=global appcenter-cli
       
     - name: Upload App to Test Cloud
-      run: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest-iOS\" --devices 1f1515d2 --app-path \"${{ github.workspace }}/artifacts/MauiUITestSample.ipa\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/\" --uitest-tools-dir \"MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/\" --token \"${{ secrets.APPCENTER_TOKEN_IOS }}\" --async"
+      run: appcenter test run uitest --app "${{ env.APP_DEFINITION }}" --devices "${{ env.TEST_DEVICES }}" --app-path "${{ github.workspace }}/artifacts/MauiUITestSample.ipa" --test-series "${{ env.TEST_SERIES }}" --build-dir "MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/" --uitest-tools-dir "MyAppTests/bin/${{ env.BUILD_CONFIGURATION }}/net48/" --token "${{ secrets.APPCENTER_TOKEN_IOS }}" --async

@@ -1,6 +1,24 @@
+# Don't forget to add these secrets/build pipeline variables in your Azure Pipeline:
+# - P12_PASSWORD: iOS only.
+# - APPCENTER_TOKEN_ANDROID: 
+# - APPCENTER_TOKEN_IOS: 
+
 variables:
     BuildConfiguration: Release
     DotNetVersion: 7.0.x
+    MauiCsprojToBuild: MauiUITestSample/MauiUITestSample.csproj
+    UITestCsprojToBuild: MyAppTests/MyAppTests.csproj
+    # Find this in the ApplicationId node in the .NET MAUI csproj file
+    AppId: com.companyname.mauiuitestsample
+
+    # App Center configuration
+    AndroidTestDevices: ff8f571c
+    AndroidAppDefinition: xtc-Xamarin-Forms/MauiTest
+    AndroidTestSeries: master
+    
+    iOSTestDevices: 1f1515d2
+    iOSAppDefinition: xtc-Xamarin-Forms/MauiTest-iOS
+    iOSTestSeries: master
 
 stages:
 - stage: Build_And_UITest_Android
@@ -37,12 +55,12 @@ stages:
     - task: CmdLine@2
       displayName: Publish .NET MAUI App
       inputs:
-        script: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c $(BuildConfiguration) -f net7.0-android -o $(Build.ArtifactStagingDirectory)
+        script: dotnet publish $(MauiCsprojToBuild) -c $(BuildConfiguration) -f net7.0-android -o $(Build.ArtifactStagingDirectory)
 
     - task: CmdLine@2
       displayName: Build UI Test Project
       inputs:
-        script: dotnet build MyAppTests/MyAppTests.csproj -c $(BuildConfiguration)
+        script: dotnet build $(UITestCsprojToBuild) -c $(BuildConfiguration)
 
     - task: CmdLine@2
       displayName: Install App Center CLI
@@ -52,7 +70,7 @@ stages:
     - task: CmdLine@2
       displayName: Upload App to Test Cloud
       inputs:
-        script: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest\" --devices ff8f571c --app-path \"$(Build.ArtifactStagingDirectory)\\com.companyname.mauiuitestsample-Signed.apk\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --uitest-tools-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --token \"$(APPCENTER_TOKEN_ANDROID)\" --async"
+        script: appcenter test run uitest --app "$(AndroidAppDefinition)" --devices $(AndroidTestDevices) --app-path "$(Build.ArtifactStagingDirectory)\\$(AppId)-Signed.apk" --test-series "$(AndroidTestSeries)" --build-dir "MyAppTests/bin/$(BuildConfiguration)/net48/" --uitest-tools-dir "MyAppTests/bin/$(BuildConfiguration)/net48/" --token "$(APPCENTER_TOKEN_ANDROID)" --async
 
 - stage: Build_And_UITest_iOS
   dependsOn: []
@@ -98,13 +116,13 @@ stages:
         displayName: Publish .NET MAUI iOS App
         inputs:
           targetType: 'inline'
-          script: dotnet publish MauiUITestSample/MauiUITestSample.csproj -c $(BuildConfiguration) -f net7.0-ios -o $(Build.ArtifactStagingDirectory)
+          script: dotnet publish $(MauiCsprojToBuild) -c $(BuildConfiguration) -f net7.0-ios -o $(Build.ArtifactStagingDirectory)
 
       - task: Bash@3
         displayName: Build UI Test Project
         inputs:
           targetType: 'inline'
-          script: dotnet build MyAppTests/MyAppTests.csproj -c $(BuildConfiguration)
+          script: dotnet build $(UITestCsprojToBuild) -c $(BuildConfiguration)
 
       - task: Bash@3
         displayName: Install App Center CLI
@@ -116,4 +134,4 @@ stages:
         displayName: Upload App to Test Cloud
         inputs:
           targetType: 'inline'
-          script: "appcenter test run uitest --app \"xtc-Xamarin-Forms/MauiTest-iOS\" --devices 1f1515d2 --app-path \"$(Build.ArtifactStagingDirectory)/MauiUITestSample.ipa\" --test-series \"master\" --locale \"en_US\" --build-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --uitest-tools-dir \"MyAppTests/bin/$(BuildConfiguration)/net48/\" --token \"$(APPCENTER_TOKEN_IOS)\" --async"
+          script: appcenter test run uitest --app "$(iOSAppDefinition)" --devices $(iOSTestDevices) --app-path "$(Build.ArtifactStagingDirectory)/MauiUITestSample.ipa" --test-series "$(iOSTestSeries)" --build-dir "MyAppTests/bin/$(BuildConfiguration)/net48/" --uitest-tools-dir "MyAppTests/bin/$(BuildConfiguration)/net48/" --token "$(APPCENTER_TOKEN_IOS)" --async
