@@ -1,13 +1,19 @@
 # Don't forget to add these secrets/build pipeline variables in your Azure Pipeline:
-# - P12_PASSWORD: iOS only.
-# - APPCENTER_TOKEN_ANDROID: 
-# - APPCENTER_TOKEN_IOS: 
+# - P12_PASSWORD: iOS only. The password for the P12 certificate file to sign the ipa file.
+# - APPCENTER_TOKEN_ANDROID: App Center API key that can access the App Center Android app definition.
+# - APPCENTER_TOKEN_IOS: App Center API key that can access the App Center iOS app definition.
+# More information on the App Center API tokens can be found here: https://learn.microsoft.com/appcenter/api-docs/
 
+# Replace these variables to match your project
 variables:
     BuildConfiguration: Release
     DotNetVersion: 7.0.x
     MauiCsprojToBuild: MauiUITestSample/MauiUITestSample.csproj
     UITestCsprojToBuild: MyAppTests/MyAppTests.csproj
+
+    # Should match the values for the TargetFrameworks node in the .NET MAUI csproj file. Also make sure this matches DotNetVersion.
+    TfmPrefix: net7.0
+
     # Find this in the ApplicationId node in the .NET MAUI csproj file
     AppId: com.companyname.mauiuitestsample
 
@@ -15,10 +21,18 @@ variables:
     AndroidTestDevices: ff8f571c
     AndroidAppDefinition: xtc-Xamarin-Forms/MauiTest
     AndroidTestSeries: master
-    
+
     iOSTestDevices: 1f1515d2
     iOSAppDefinition: xtc-Xamarin-Forms/MauiTest-iOS
     iOSTestSeries: master
+
+    # These values correspond to files that are uploaded to the Azure Pipeline secure files. Make sure the filenames match here with the uploaded files.
+    # More information about using secure files can be found here: https://learn.microsoft.com/azure/devops/pipelines/library/secure-files
+    # More information about obtaining a P12 and provisioning profile file can be found here: https://learn.microsoft.com/dotnet/maui/ios/deployment/publish-app-store
+    P12_SECURE_FILENAME: Certificates.p12
+    PROVISIONING_PROFILE_SECURE_FILENAME: MauiUITest.mobileprovision
+
+trigger: none
 
 stages:
 - stage: Build_And_UITest_Android
@@ -55,7 +69,7 @@ stages:
     - task: CmdLine@2
       displayName: Publish .NET MAUI App
       inputs:
-        script: dotnet publish $(MauiCsprojToBuild) -c $(BuildConfiguration) -f net7.0-android -o $(Build.ArtifactStagingDirectory)
+        script: dotnet publish $(MauiCsprojToBuild) -c $(BuildConfiguration) -f $(TfmPrefix)-android -o $(Build.ArtifactStagingDirectory)
 
     - task: CmdLine@2
       displayName: Build UI Test Project
@@ -84,7 +98,7 @@ stages:
       - task: InstallAppleCertificate@2
         displayName: Install iOS App P12 Certificate
         inputs:
-          certSecureFile: 'Certificates.p12'
+          certSecureFile: '$(P12_SECURE_FILENAME)'
           certPwd: '$(P12_PASSWORD)'
           keychain: 'temp'
 
@@ -92,7 +106,7 @@ stages:
         displayName: Install iOS App Provisioning Profile
         inputs:
           provisioningProfileLocation: 'secureFiles'
-          provProfileSecureFile: 'MauiUITest.mobileprovision'
+          provProfileSecureFile: '$(PROVISIONING_PROFILE_SECURE_FILENAME)'
 
       - task: UseDotNet@2
         displayName: Install .NET
@@ -116,7 +130,7 @@ stages:
         displayName: Publish .NET MAUI iOS App
         inputs:
           targetType: 'inline'
-          script: dotnet publish $(MauiCsprojToBuild) -c $(BuildConfiguration) -f net7.0-ios -o $(Build.ArtifactStagingDirectory)
+          script: dotnet publish $(MauiCsprojToBuild) -c $(BuildConfiguration) -f $(TfmPrefix)-ios -o $(Build.ArtifactStagingDirectory)
 
       - task: Bash@3
         displayName: Build UI Test Project

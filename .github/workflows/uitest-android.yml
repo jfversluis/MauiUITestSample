@@ -1,17 +1,22 @@
 # Don't forget to add these secrets in your GitHub repository:
-# - APPCENTER_TOKEN_ANDROID: This is an API key for App Center specific to your Android app listing
+# - APPCENTER_TOKEN_ANDROID: App Center API key that can access the App Center Android app definition.
+# More information on the App Center API tokens can be found here: https://learn.microsoft.com/appcenter/api-docs/
 
 name: Test .NET MAUI Android App
 
 on:
   workflow_dispatch:
-  
+
+# Replace these variables to match your project
 env:
   BUILD_CONFIGURATION: Release
   DOTNET_VERSION: 7.0.x
   MAUI_CSPROJ_TO_BUILD: MauiUITestSample/MauiUITestSample.csproj
   UITEST_CSPROJ_TO_BUILD: MyAppTests/MyAppTests.csproj
   
+  # Should match the values for the TargetFrameworks node in the .NET MAUI csproj file. Also make sure this matches DOTNET_VERSION.
+  TFM_PREFIX: net7.0
+
   # Find this in the ApplicationId node in the .NET MAUI csproj file
   APP_ID: com.companyname.mauiuitestsample
 
@@ -39,7 +44,7 @@ jobs:
       run: dotnet restore
       
     - name: Publish .NET MAUI Android App
-      run: dotnet publish ${{ env.MAUI_CSPROJ_TO_BUILD }} -c ${{ env.BUILD_CONFIGURATION }} -f net7.0-android -o ${{ github.workspace }}\\artifacts
+      run: dotnet publish ${{ env.MAUI_CSPROJ_TO_BUILD }} -c ${{ env.BUILD_CONFIGURATION }} -f ${{ env.TFM_PREFIX }}-android -o ${{ github.workspace }}\\artifacts
       
     - name: Build UITest Project
       run: dotnet build ${{ env.UITEST_CSPROJ_TO_BUILD }} -c ${{ env.BUILD_CONFIGURATION }}
