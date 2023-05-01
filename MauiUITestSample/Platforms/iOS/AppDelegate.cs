@@ -7,11 +7,11 @@ public class AppDelegate : MauiUIApplicationDelegate
 {
 	protected override MauiApp CreateMauiApp()
 	{
-		#if ENABLE_TEST_CLOUD
+#if ENABLE_TEST_CLOUD
 		Xamarin.Calabash.Start();
-		#endif
+#endif
 
-        return MauiProgram.CreateMauiApp();
+	        return MauiProgram.CreateMauiApp();
 	}
 }
 
