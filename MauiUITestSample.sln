@@ -11,6 +11,7 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		ENABLE_TEST_CLOUD|Any CPU = ENABLE_TEST_CLOUD|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{77E99B9B-0AF7-4168-B2EE-3145F8482049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -19,10 +20,15 @@ Global
 		{77E99B9B-0AF7-4168-B2EE-3145F8482049}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77E99B9B-0AF7-4168-B2EE-3145F8482049}.Release|Any CPU.Build.0 = Release|Any CPU
 		{77E99B9B-0AF7-4168-B2EE-3145F8482049}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{77E99B9B-0AF7-4168-B2EE-3145F8482049}.ENABLE_TEST_CLOUD|Any CPU.ActiveCfg = Debug|Any CPU
+		{77E99B9B-0AF7-4168-B2EE-3145F8482049}.ENABLE_TEST_CLOUD|Any CPU.Build.0 = Debug|Any CPU
+		{77E99B9B-0AF7-4168-B2EE-3145F8482049}.ENABLE_TEST_CLOUD|Any CPU.Deploy.0 = Debug|Any CPU
 		{FED2F8BF-D90E-4A97-B088-DDD7BCC79448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FED2F8BF-D90E-4A97-B088-DDD7BCC79448}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FED2F8BF-D90E-4A97-B088-DDD7BCC79448}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FED2F8BF-D90E-4A97-B088-DDD7BCC79448}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FED2F8BF-D90E-4A97-B088-DDD7BCC79448}.ENABLE_TEST_CLOUD|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED2F8BF-D90E-4A97-B088-DDD7BCC79448}.ENABLE_TEST_CLOUD|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
